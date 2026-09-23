@@ -11,6 +11,8 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Quote from "../pages/Quote";
 import Contact from "../pages/Contact";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 export default function AppRoutes() {
   return (
@@ -26,6 +28,8 @@ export default function AppRoutes() {
       <Route path="/orders" element={<Orders />} /> {/* Dashboard */}{" "}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/admin/dashboard" element={<Dashboard />} /> {/* 404 */}{" "}
       <Route

@@ -14,6 +14,10 @@ import Contact from "../pages/Contact";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 
+
+import AdminRoute from "../components/admin/AdminRoute";
+
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -31,7 +35,7 @@ export default function AppRoutes() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/contact" element={<Contact />} />
-      <Route path="/admin/dashboard" element={<Dashboard />} /> {/* 404 */}{" "}
+      <Route path="/admin/dashboard" element={ <AdminRoute> <Dashboard /> </AdminRoute> } />
       <Route
         path="*"
         element={

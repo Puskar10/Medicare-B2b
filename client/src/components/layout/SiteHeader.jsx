@@ -250,7 +250,7 @@ export default function SiteHeader() {
 
               {isAdmin && (
                 <Link
-                  to="/admin"
+                  to="/admin/dashboard"
                   className="hidden h-10 items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all hover:border-[#14B8A6] hover:text-[#0F4C81] sm:flex"
                 >
                   <LayoutDashboard className="h-4 w-4" />
@@ -431,7 +431,7 @@ export default function SiteHeader() {
 
               {isAdmin && (
                 <Link
-                  to="/admin"
+                  to="/admin/dashboard"
                   onClick={closeMenu}
                   className="block border-b border-slate-100 py-4 text-sm font-bold uppercase tracking-wider text-slate-700"
                 >

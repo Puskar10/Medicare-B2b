@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #ffffff;
+  font-family: "Public Sans", "DM Sans", sans-serif;
+}
+
+.font-display {
+  font-family: "Barlow Condensed", "Public Sans", sans-serif;
+}

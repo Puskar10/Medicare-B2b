@@ -1,102 +1,21 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  Check,
+  ArrowUpRight,
+} from "lucide-react";
 
-const CATEGORIES = [
-  { id: "all", name: "All Medicines" },
-  { id: "tablets", name: "Tablets & Capsules" },
-  { id: "syrups", name: "Syrups" },
-  { id: "injections", name: "Injections" },
-  { id: "antibiotics", name: "Antibiotics" },
-  { id: "vitamins", name: "Vitamins" },
-];
+import { useCart } from "../../context/CartContext";
 
-const PRODUCTS = [
-  {
-    id: "MED001",
-    slug: "paracetamol-500mg",
-    name: "Paracetamol 500mg",
-    category: "tablets",
-    sku: "PCM-500",
-    description: "Paracetamol tablets for common healthcare requirements.",
-    price: 1.2,
-    moq: 100,
-    unit: "strips",
-    stock: 2500,
-    image:
-      "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: "MED002",
-    slug: "amoxicillin-500mg",
-    name: "Amoxicillin 500mg",
-    category: "antibiotics",
-    sku: "AMX-500",
-    description: "Amoxicillin capsules for authorized healthcare procurement.",
-    price: 4.5,
-    moq: 100,
-    unit: "strips",
-    stock: 1200,
-    image:
-      "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: "MED003",
-    slug: "vitamin-c-tablets",
-    name: "Vitamin C Tablets",
-    category: "vitamins",
-    sku: "VTC-100",
-    description: "Vitamin C tablets for pharmacy and healthcare requirements.",
-    price: 2.8,
-    moq: 100,
-    unit: "boxes",
-    stock: 1800,
-    image:
-      "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: "MED004",
-    slug: "cough-syrup",
-    name: "Cough Relief Syrup",
-    category: "syrups",
-    sku: "CRS-100",
-    description: "Liquid cough medicine for eligible pharmacy procurement.",
-    price: 32,
-    moq: 50,
-    unit: "bottles",
-    stock: 850,
-    image:
-      "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: "MED005",
-    slug: "multivitamin-capsules",
-    name: "Multivitamin Capsules",
-    category: "vitamins",
-    sku: "MVC-30",
-    description: "Multivitamin capsules for regular healthcare supply.",
-    price: 65,
-    moq: 50,
-    unit: "boxes",
-    stock: 950,
-    image:
-      "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: "MED006",
-    slug: "azithromycin-500mg",
-    name: "Azithromycin 500mg",
-    category: "antibiotics",
-    sku: "AZM-500",
-    description: "Azithromycin tablets for authorized medical procurement.",
-    price: 7.5,
-    moq: 100,
-    unit: "strips",
-    stock: 0,
-    image:
-      "https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&w=900&q=80",
-  },
-];
+import {
+  CATEGORIES,
+  PRODUCTS,
+  getCategoryName,
+} from "../../data/products";
+
+import LoginRequiredModal from "../auth/LoginRequiredModal";
 
 function formatINR(value) {
   return new Intl.NumberFormat("en-IN", {
@@ -106,23 +25,27 @@ function formatINR(value) {
   }).format(value);
 }
 
-function categoryName(categoryId) {
-  const category = CATEGORIES.find((item) => item.id === categoryId);
-  return category?.name || categoryId;
-}
-
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { addToCart, isInCart, getCartItem } = useCart();
+
+  const [message, setMessage] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const category = searchParams.get("category") || "all";
   const q = searchParams.get("q") || "";
 
+  /*
+   * Filter products
+   */
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
 
     return PRODUCTS.filter((product) => {
       const matchesCategory =
-        category === "all" || product.category === category;
+        category === "all" ||
+        product.category === category;
 
       const matchesSearch =
         search === "" ||
@@ -134,11 +57,16 @@ export default function Catalog() {
     });
   }, [category, q]);
 
+  /*
+   * Search
+   */
   const handleSearch = (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const searchValue = formData.get("q")?.trim() || "";
+
+    const searchValue =
+      formData.get("q")?.trim() || "";
 
     const params = {};
 
@@ -153,11 +81,50 @@ export default function Catalog() {
     setSearchParams(params);
   };
 
+  /*
+   * Add product to cart
+   */
+  const handleAddToCart = (product) => {
+    // Check if user is logged in
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    // User is logged in, add product normally
+    const result = addToCart(product);
+
+    setMessage(result.message);
+
+    setTimeout(() => {
+      setMessage("");
+    }, 2500);
+  };
+
   return (
     <section className="min-h-screen bg-white">
+
+      {/* Login Required Modal */}
+      <LoginRequiredModal
+        open={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+      />
+
+      {/* Success message */}
+      {message && (
+        <div className="fixed right-5 top-5 z-50 flex max-w-sm items-center gap-3 rounded-xl bg-[#0F4C81] px-5 py-4 text-sm font-semibold text-white shadow-xl">
+          <Check className="h-5 w-5 shrink-0 text-[#14B8A6]" />
+          <span>{message}</span>
+        </div>
+      )}
+
       <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+
         {/* Header */}
         <div className="max-w-3xl">
+
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#14B8A6]">
             Wholesale Medicine Catalogue
           </p>
@@ -167,25 +134,33 @@ export default function Catalog() {
           </h1>
 
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            Browse medicines available for B2B procurement. Find products by
-            category, search by medicine name or SKU, and view minimum order
-            quantities and wholesale pricing.
+            Browse medicines available for B2B procurement.
+            Find products by category, search by medicine name
+            or SKU, and view minimum order quantities and
+            wholesale pricing.
           </p>
+
         </div>
 
         {/* Filters */}
         <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
             {/* Categories */}
             <div className="flex flex-wrap gap-2">
+
               {CATEGORIES.map((item) => {
-                const active = category === item.id;
+
+                const active =
+                  category === item.id;
 
                 return (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => {
+
                       const params = {};
 
                       if (item.id !== "all") {
@@ -207,7 +182,9 @@ export default function Catalog() {
                     {item.name}
                   </button>
                 );
+
               })}
+
             </div>
 
             {/* Search */}
@@ -215,8 +192,12 @@ export default function Catalog() {
               onSubmit={handleSearch}
               className="flex w-full max-w-md items-center gap-2"
             >
+
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+
+                <Search
+                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                />
 
                 <input
                   type="search"
@@ -225,6 +206,7 @@ export default function Catalog() {
                   placeholder="Search medicine or SKU..."
                   className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-[#14B8A6] focus:ring-2 focus:ring-[#14B8A6]/10"
                 />
+
               </div>
 
               <button
@@ -234,18 +216,23 @@ export default function Catalog() {
               >
                 <Search className="h-4 w-4" />
               </button>
+
             </form>
+
           </div>
         </div>
 
-        {/* Results information */}
+        {/* Results */}
         <div className="mt-8 flex flex-col justify-between gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-center">
+
           <p className="text-sm text-slate-500">
             Showing{" "}
             <span className="font-semibold text-slate-900">
               {filtered.length}
             </span>{" "}
-            {filtered.length === 1 ? "medicine" : "medicines"}
+            {filtered.length === 1
+              ? "medicine"
+              : "medicines"}
           </p>
 
           {q && (
@@ -253,11 +240,13 @@ export default function Catalog() {
               Search: "{q}"
             </p>
           )}
+
         </div>
 
         {/* Empty state */}
         {filtered.length === 0 && (
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-16 text-center">
+
             <Search className="mx-auto h-8 w-8 text-slate-300" />
 
             <h2 className="mt-4 text-lg font-bold uppercase text-slate-900">
@@ -275,96 +264,207 @@ export default function Catalog() {
             >
               Clear filters
             </button>
+
           </div>
         )}
 
-        {/* Product grid */}
+        {/* Product Grid */}
         {filtered.length > 0 && (
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filtered.map((product) => (
-              <Link
-                key={product.id}
-                to={`/products/${product.slug}`}
-                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-              >
-                {/* Image */}
-                <div className="relative overflow-hidden bg-slate-100">
-                  {product.image ? (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      loading="lazy"
-                      className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="aspect-square w-full bg-slate-100" />
-                  )}
 
-                  {/* Stock */}
-                  {product.stock <= 0 ? (
-                    <span className="absolute left-3 top-3 rounded-lg bg-red-600 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                      Out of stock
-                    </span>
-                  ) : (
-                    <span className="absolute left-3 top-3 rounded-lg bg-white/90 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 shadow-sm backdrop-blur">
-                      In stock
-                    </span>
-                  )}
-                </div>
+            {filtered.map((product) => {
 
-                {/* Content */}
-                <div className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#14B8A6]">
-                    {categoryName(product.category)}
-                  </p>
+              const inCart =
+                isInCart(product.id);
 
-                  <h2 className="mt-2 text-lg font-bold leading-tight text-slate-900">
-                    {product.name}
-                  </h2>
+              const cartItem =
+                getCartItem(product.id);
 
-                  <p className="mt-2 text-xs text-slate-500">
-                    SKU: {product.sku}
-                  </p>
+              const isOutOfStock =
+                product.stock <= 0;
 
-                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                    <div>
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                        Starting from
-                      </p>
+              const remainingStock =
+                product.stock -
+                (cartItem?.quantity || 0);
 
-                      <p className="mt-1 text-lg font-bold text-[#0F4C81]">
-                        {formatINR(product.price)}
-                      </p>
-                    </div>
+              const cannotAddMore =
+                remainingStock < product.moq;
 
-                    <div className="text-right">
-                      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                        MOQ
-                      </p>
+              return (
+                <div
+                  key={product.id}
+                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
 
-                      <p className="mt-1 text-xs font-bold text-slate-700">
-                        {product.moq} {product.unit}
-                      </p>
-                    </div>
+                  {/* Image */}
+                  <div className="relative overflow-hidden bg-slate-100">
+
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        loading="lazy"
+                        className="aspect-square w-full object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="aspect-square w-full bg-slate-100" />
+                    )}
+
+                    {/* Stock */}
+                    {isOutOfStock ? (
+                      <span className="absolute left-3 top-3 rounded-lg bg-red-600 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white">
+                        Out of stock
+                      </span>
+                    ) : (
+                      <span className="absolute left-3 top-3 rounded-lg bg-white/90 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 shadow-sm backdrop-blur">
+                        In stock
+                      </span>
+                    )}
+
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#0F4C81]">
-                    <span>View medicine</span>
+                  {/* Content */}
+                  <div className="p-5">
 
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">
-                      →
-                    </span>
+                    {/* Category */}
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#14B8A6]">
+                      {getCategoryName(
+                        product.category
+                      )}
+                    </p>
+
+                    {/* Product Name */}
+                    <h2 className="mt-2 text-lg font-bold leading-tight text-slate-900">
+                      {product.name}
+                    </h2>
+
+                    {/* SKU */}
+                    <p className="mt-2 text-xs text-slate-500">
+                      SKU: {product.sku}
+                    </p>
+
+                    {/* Price + MOQ */}
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          Starting from
+                        </p>
+
+                        <p className="mt-1 text-lg font-bold text-[#0F4C81]">
+                          {formatINR(
+                            product.price
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                          MOQ
+                        </p>
+
+                        <p className="mt-1 text-xs font-bold text-slate-700">
+                          {product.moq}{" "}
+                          {product.unit}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                    {/* Cart Status */}
+                    {inCart && (
+                      <div className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-center text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                        {cartItem.quantity}{" "}
+                        {product.unit} in cart
+                      </div>
+                    )}
+
+                    {/* Add To Cart */}
+                    <button
+                      type="button"
+                      disabled={
+                        isOutOfStock ||
+                        cannotAddMore
+                      }
+                      onClick={() =>
+                        handleAddToCart(product)
+                      }
+                      className={`mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                        isOutOfStock ||
+                        cannotAddMore
+                          ? "cursor-not-allowed bg-slate-100 text-slate-400"
+                          : inCart
+                          ? "bg-[#14B8A6] text-white hover:bg-[#0F4C81]"
+                          : "bg-[#0F4C81] text-white hover:bg-[#14B8A6] hover:shadow-md"
+                      }`}
+                    >
+
+                      {isOutOfStock ? (
+                        <>
+                          <ShoppingCart className="h-4 w-4" />
+                          Out of Stock
+                        </>
+                      ) : cannotAddMore ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Maximum in Cart
+                        </>
+                      ) : inCart ? (
+                        <>
+                          <ShoppingCart className="h-4 w-4" />
+                          Add More
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="h-4 w-4" />
+                          Add to Cart
+                        </>
+                      )}
+
+                    </button>
+
+                    {/* See More */}
+                    <Link
+                      to={`/products/${product.slug}`}
+                      className="group/see-more mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-xs font-bold uppercase tracking-wider text-[#0F4C81] transition-all hover:border-[#14B8A6] hover:bg-slate-50"
+                    >
+
+                      <span>
+                        See More
+                      </span>
+
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover/see-more:-translate-y-0.5 group-hover/see-more:translate-x-0.5" />
+
+                    </Link>
+
+                    {/* MOQ */}
+                    <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+
+                      <Check className="h-3 w-3 text-[#14B8A6]" />
+
+                      Minimum order:{" "}
+                      {product.moq}{" "}
+                      {product.unit}
+
+                    </div>
+
                   </div>
                 </div>
-              </Link>
-            ))}
+              );
+            })}
+
           </div>
         )}
 
-        {/* Bottom procurement CTA */}
+        {/* Bottom CTA */}
         <div className="mt-12 overflow-hidden rounded-2xl bg-[#0F4C81] p-6 text-white sm:p-8">
+
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+
             <div>
+
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#14B8A6]">
                 Bulk procurement
               </p>
@@ -374,9 +474,11 @@ export default function Catalog() {
               </h2>
 
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/70">
-                Send your medicine requirements and quantities to receive a
-                customized B2B quotation.
+                Send your medicine requirements and
+                quantities to receive a customized B2B
+                quotation.
               </p>
+
             </div>
 
             <Link
@@ -385,8 +487,11 @@ export default function Catalog() {
             >
               Request a Quote
             </Link>
+
           </div>
+
         </div>
+
       </div>
     </section>
   );

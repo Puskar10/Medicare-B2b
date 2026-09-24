@@ -8,28 +8,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-const CATEGORIES = [
-  {
-    id: "surgical",
-    name: "Surgical Supplies",
-  },
-  {
-    id: "diagnostic",
-    name: "Diagnostic Equipment",
-  },
-  {
-    id: "hospital",
-    name: "Hospital Equipment",
-  },
-  {
-    id: "pharmacy",
-    name: "Pharmacy Supplies",
-  },
-  {
-    id: "ppe",
-    name: "PPE & Safety",
-  },
-];
+import { PRODUCTS } from "../../data/products";
 
 const CONTACT = {
   phone: "+91 98765 43210",
@@ -97,6 +76,7 @@ export default function SiteFooter() {
             </h3>
 
             <ul className="mt-5 space-y-3 text-sm">
+
               <li>
                 <Link
                   to="/"
@@ -111,7 +91,7 @@ export default function SiteFooter() {
                   to="/products"
                   className="text-slate-300 transition hover:text-[#14B8A6]"
                 >
-                  Products
+                  All Products
                 </Link>
               </li>
 
@@ -141,28 +121,35 @@ export default function SiteFooter() {
                   Contact
                 </Link>
               </li>
+
             </ul>
           </div>
 
-          {/* Categories */}
+          {/* Products */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-              Categories
+              Products
             </h3>
 
             <ul className="mt-5 space-y-3 text-sm">
-              {CATEGORIES.map((category) => (
-                <li key={category.id}>
+
+              {PRODUCTS.map((product) => (
+                <li key={product.id}>
                   <Link
-                    to={`/products?category=${category.id}`}
+                    to={`/products/${product.slug}`}
                     className="group flex items-center gap-1 text-slate-300 transition hover:text-[#14B8A6]"
                   >
-                    {category.name}
+                    <span className="line-clamp-1">
+                      {product.name}
+                    </span>
 
-                    <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+                    <ArrowUpRight
+                      className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                    />
                   </Link>
                 </li>
               ))}
+
             </ul>
           </div>
 
@@ -174,6 +161,7 @@ export default function SiteFooter() {
 
             <ul className="mt-5 space-y-4 text-sm">
 
+              {/* Phone */}
               <li className="flex items-start gap-3">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[#14B8A6]" />
 
@@ -185,6 +173,7 @@ export default function SiteFooter() {
                 </a>
               </li>
 
+              {/* Email */}
               <li className="flex items-start gap-3">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#14B8A6]" />
 
@@ -196,6 +185,7 @@ export default function SiteFooter() {
                 </a>
               </li>
 
+              {/* Address */}
               <li className="flex items-start gap-3">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#14B8A6]" />
 
@@ -203,6 +193,7 @@ export default function SiteFooter() {
                   {CONTACT.address}
                 </span>
               </li>
+
             </ul>
 
             {/* Quote Button */}
@@ -215,15 +206,18 @@ export default function SiteFooter() {
               <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </div>
+
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
+
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-5 text-xs sm:px-6 md:flex-row md:items-center md:justify-between">
 
           <p className="text-slate-500">
-            © {new Date().getFullYear()} CuraMed Supply Pvt. Ltd. All rights reserved.
+            © {new Date().getFullYear()} CuraMed Supply Pvt. Ltd.
+            All rights reserved.
           </p>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
@@ -236,6 +230,7 @@ export default function SiteFooter() {
 
         </div>
       </div>
+
     </footer>
   );
 }

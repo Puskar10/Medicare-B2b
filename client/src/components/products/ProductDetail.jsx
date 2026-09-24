@@ -24,7 +24,7 @@ const SAMPLE_PRODUCTS = {
     unit: "strips",
     stock: 2500,
     image:
-      "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=1000&q=80",
     manufacturer: "CuraMed Partner Pharma",
     composition: "Paracetamol IP 500mg",
     dosageForm: "Tablet",
@@ -84,7 +84,7 @@ const SAMPLE_PRODUCTS = {
     unit: "boxes",
     stock: 1800,
     image:
-      "https://images.unsplash.com/photo-1550572017-edd951aa8ca5?auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=1000&q=80",
     manufacturer: "CuraMed Partner Pharma",
     composition: "Vitamin C",
     dosageForm: "Tablet",

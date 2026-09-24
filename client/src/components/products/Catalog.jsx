@@ -52,7 +52,7 @@ const PRODUCTS = [
     unit: "boxes",
     stock: 1800,
     image:
-      "https://images.unsplash.com/photo-1550572017-edd951aa8ca5?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: "MED004",

@@ -67,7 +67,6 @@ export default function SiteHeader() {
     const originalOverflow = document.body.style.overflow;
     const originalPaddingRight = document.body.style.paddingRight;
 
-    // Compensate for scrollbar disappearing (desktop / tablet)
     const scrollbarWidth =
       window.innerWidth - document.documentElement.clientWidth;
 
@@ -106,6 +105,10 @@ export default function SiteHeader() {
   const isAuthed = Boolean(user);
   const isAdmin = user?.role === "admin";
   const cartCount = 0;
+
+  /* Hide cart + orders for admins */
+  const showCart = !isAdmin;
+  const showOrders = isAuthed && !isAdmin;
 
   const closeMenu = () => setOpen(false);
 
@@ -203,19 +206,21 @@ export default function SiteHeader() {
 
           {/* ---------- Right actions ---------- */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Cart */}
-            <Link
-              to="/cart"
-              className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-all duration-200 hover:border-[#14B8A6] hover:text-[#0F4C81] hover:shadow-sm sm:h-10 sm:w-10"
-              aria-label="Shopping cart"
-            >
-              <ShoppingCart className="h-[16px] w-[16px] sm:h-[18px] sm:w-[18px]" />
-              {cartCount > 0 && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#14B8A6] px-1 text-[10px] font-bold text-white shadow-sm">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {/* Cart — hidden for admins */}
+            {showCart && (
+              <Link
+                to="/cart"
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-all duration-200 hover:border-[#14B8A6] hover:text-[#0F4C81] hover:shadow-sm sm:h-10 sm:w-10"
+                aria-label="Shopping cart"
+              >
+                <ShoppingCart className="h-[16px] w-[16px] sm:h-[18px] sm:w-[18px]" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#14B8A6] px-1 text-[10px] font-bold text-white shadow-sm">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* =================================================
                 AUTHENTICATED USER
@@ -232,12 +237,15 @@ export default function SiteHeader() {
                   </Link>
                 )}
 
-                <Link
-                  to="/orders"
-                  className="hidden h-10 items-center rounded-xl border border-slate-200 px-4 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all hover:border-[#14B8A6] hover:text-[#0F4C81] sm:flex"
-                >
-                  Orders
-                </Link>
+                {/* Orders — hidden for admins */}
+                {showOrders && (
+                  <Link
+                    to="/orders"
+                    className="hidden h-10 items-center rounded-xl border border-slate-200 px-4 text-xs font-bold uppercase tracking-wider text-slate-700 transition-all hover:border-[#14B8A6] hover:text-[#0F4C81] sm:flex"
+                  >
+                    Orders
+                  </Link>
+                )}
 
                 <div className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 sm:flex">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0F4C81] text-[10px] font-black text-white">
@@ -380,13 +388,16 @@ export default function SiteHeader() {
                 </div>
               </div>
 
-              <Link
-                to="/orders"
-                onClick={closeMenu}
-                className="block border-b border-slate-100 py-4 text-sm font-bold uppercase tracking-wider text-slate-700"
-              >
-                My Orders
-              </Link>
+              {/* My Orders — hidden for admins */}
+              {showOrders && (
+                <Link
+                  to="/orders"
+                  onClick={closeMenu}
+                  className="block border-b border-slate-100 py-4 text-sm font-bold uppercase tracking-wider text-slate-700"
+                >
+                  My Orders
+                </Link>
+              )}
 
               {isAdmin && (
                 <Link

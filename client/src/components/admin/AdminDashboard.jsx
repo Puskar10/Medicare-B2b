@@ -238,7 +238,7 @@ export default function AdminDashboard() {
         }
 
         const response = await fetch(
-          `${API_URL}/admin/dashboard`,
+          `${API_URL}/api/admin/dashboard`,
           {
             method: "GET",
             headers: {
@@ -358,16 +358,16 @@ export default function AdminDashboard() {
 
         <div className="flex gap-2">
 
-          <Link
+          {/* <Link
             to="/"
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-xs font-black uppercase tracking-wider text-slate-600 transition hover:border-[#0F4C81] hover:text-[#0F4C81]"
           >
             Back to website
 
             <ArrowUpRight className="h-3.5 w-3.5" />
-          </Link>
+          </Link> */}
 
-          <button
+          {/* <button
             type="button"
             onClick={handleLogout}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 text-xs font-black uppercase tracking-wider text-red-600 transition hover:bg-red-50"
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
             <LogOut className="h-3.5 w-3.5" />
 
             Logout
-          </button>
+          </button> */}
 
         </div>
       </div>

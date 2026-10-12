@@ -25,7 +25,7 @@ export default function AppRoutes() {
       {/* Home */} <Route path="/" element={<Home />} /> {/* About */}{" "}
       <Route path="/about" element={<About />} /> {/* Products */}{" "}
       <Route path="/products" element={<Products />} />{" "}
-      <Route path="/products/:slug" element={<ProductDetails />} /> {/* Cart */}{" "}
+      <Route path="/products/:slug" element={<ProductDetails />} /> Cart{" "}
       <Route path="/cart" element={<Cart />} /> {/* Checkout */}{" "}
       <Route path="/checkout" element={<Checkout />} /> {/* Orders */}{" "}
       <Route path="/quote" element={<Quote />} />

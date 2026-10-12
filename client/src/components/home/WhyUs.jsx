@@ -144,43 +144,7 @@ export default function WhyUs() {
           </div>
         </div>
 
-        {/* Certifications */}
-        <div className="mt-16">
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
-                Certifications & compliance
-              </p>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Standards and documentation supporting professional healthcare
-                procurement.
-              </p>
-            </div>
-
-            <ShieldCheck className="hidden h-6 w-6 text-[#14B8A6] sm:block" />
-          </div>
-
-          {/* Certification Grid */}
-          <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 sm:grid-cols-3 lg:grid-cols-5">
-            {CERTIFICATIONS.map((certification) => (
-              <div
-                key={certification.code}
-                className="group bg-white px-4 py-7 text-center transition-colors duration-300 hover:bg-slate-50"
-              >
-                <p className="text-2xl font-bold uppercase tracking-tight text-[#0F4C81]">
-                  {certification.code}
-                </p>
-
-                <div className="mx-auto mt-3 h-px w-8 bg-[#14B8A6] transition-all duration-300 group-hover:w-14" />
-
-                <p className="mt-3 text-xs leading-snug text-slate-500">
-                  {certification.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+       
 
       </div>
     </section>
